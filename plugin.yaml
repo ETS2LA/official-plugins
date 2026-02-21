@@ -1,6 +1,0 @@
-name: "Example Plugin"
-overview: "Write a short overview here, this is visible before a user clicks the plugin"
-description: "Write your description here, this entry supports full markdown syntax"
-image_url: "https://images.pexels.com/photos/18053819/pexels-photo-18053819/free-photo-of-scenic-landscape-at-sunrise.jpeg"
-version: "1.0.0"
-author: "Your Name"
