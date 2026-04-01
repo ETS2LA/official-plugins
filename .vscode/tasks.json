@@ -13,7 +13,10 @@
                 "reveal": "always",
                 "panel": "shared"
             },
-            "problemMatcher": []
+            "problemMatcher": [],
+            "linux": {
+                "command": "./ETS2LA.sh"
+            }
         }
     ]
 }
