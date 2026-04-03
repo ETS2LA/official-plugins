@@ -28,6 +28,9 @@
     <ProjectReference Include="..\ETS2LA\ETS2LA.Audio\ETS2LA.Audio.csproj">
       <Private>false</Private>
     </ProjectReference>
+    <ProjectReference Include="..\ETS2LA\ETS2LA.Overlay\ETS2LA.Overlay.csproj">
+      <Private>false</Private>
+    </ProjectReference>
     <ProjectReference Include="..\ETS2LA\ETS2LA.Controls\ETS2LA.Controls.csproj">
       <Private>false</Private>
     </ProjectReference>
