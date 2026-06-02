@@ -1,3 +1,6 @@
+# READ THIS
+This repository is currently **out of date** as I'm working on ETS2LA C#'s backend. A working version exists, but I haven't prioritized removing all of my own code to replace this repository. **If you want to create a plugin for ETS2LA C#, shout at me in Discord, and I'll update this repo!**
+
 # example-plugin
 An example plugin for ETS2LA C#. You can use this as a starting point for you own.
 
