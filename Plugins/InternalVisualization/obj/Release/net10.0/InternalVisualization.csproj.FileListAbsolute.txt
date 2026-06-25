@@ -1,0 +1,14 @@
+/home/tuomas/Documents/GitHub/ETS2LA/Plugins/InternalVisualization/bin/Release/net10.0/InternalVisualization.deps.json
+/home/tuomas/Documents/GitHub/ETS2LA/Plugins/InternalVisualization/bin/Release/net10.0/InternalVisualization.dll
+/home/tuomas/Documents/GitHub/ETS2LA/Plugins/InternalVisualization/bin/Release/net10.0/InternalVisualization.pdb
+/home/tuomas/Documents/GitHub/ETS2LA/Plugins/InternalVisualization/obj/Release/net10.0/InternalVisualization.csproj.AssemblyReference.cache
+/home/tuomas/Documents/GitHub/ETS2LA/Plugins/InternalVisualization/obj/Release/net10.0/Avalonia/Resources.Inputs.cache
+/home/tuomas/Documents/GitHub/ETS2LA/Plugins/InternalVisualization/obj/Release/net10.0/InternalVisualization.GeneratedMSBuildEditorConfig.editorconfig
+/home/tuomas/Documents/GitHub/ETS2LA/Plugins/InternalVisualization/obj/Release/net10.0/InternalVisualization.AssemblyInfoInputs.cache
+/home/tuomas/Documents/GitHub/ETS2LA/Plugins/InternalVisualization/obj/Release/net10.0/InternalVisualization.AssemblyInfo.cs
+/home/tuomas/Documents/GitHub/ETS2LA/Plugins/InternalVisualization/obj/Release/net10.0/InternalVisualization.csproj.CoreCompileInputs.cache
+/home/tuomas/Documents/GitHub/ETS2LA/Plugins/InternalVisualization/obj/Release/net10.0/InternalVisualization.sourcelink.json
+/home/tuomas/Documents/GitHub/ETS2LA/Plugins/InternalVisualization/obj/Release/net10.0/InternalVisualization.dll
+/home/tuomas/Documents/GitHub/ETS2LA/Plugins/InternalVisualization/obj/Release/net10.0/refint/InternalVisualization.dll
+/home/tuomas/Documents/GitHub/ETS2LA/Plugins/InternalVisualization/obj/Release/net10.0/InternalVisualization.pdb
+/home/tuomas/Documents/GitHub/ETS2LA/Plugins/InternalVisualization/obj/Release/net10.0/ref/InternalVisualization.dll
