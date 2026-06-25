@@ -2,37 +2,60 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExamplePlugin", "ExamplePlugin\ExamplePlugin.csproj", "{00000000-0000-0000-0000-000000000001}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExamplePlugin", "Plugins\ExamplePlugin\ExamplePlugin.csproj", "{00000000-0000-0000-0000-000000000001}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ETS2LA.Shared", "ETS2LA\ETS2LA.Shared\ETS2LA.Shared.csproj", "{00000000-0000-0000-0000-000000000002}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ETS2LA.Settings", "ETS2LA\ETS2LA.Settings\ETS2LA.Settings.csproj", "{00000000-0000-0000-0000-000000000003}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ETS2LA.Logging", "ETS2LA\ETS2LA.Logging\ETS2LA.Logging.csproj", "{00000000-0000-0000-0000-000000000004}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ETS2LA.UI", "ETS2LA\ETS2LA.UI\ETS2LA.UI.csproj", "{00000000-0000-0000-0000-000000000005}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ETS2LA.Game", "ETS2LA\ETS2LA.Game\ETS2LA.Game.csproj", "{00000000-0000-0000-0000-000000000006}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ETS2LA.Backend", "ETS2LA\ETS2LA.Backend\ETS2LA.Backend.csproj", "{00000000-0000-0000-0000-000000000007}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ETS2LA.Audio", "ETS2LA\ETS2LA.Audio\ETS2LA.Audio.csproj", "{00000000-0000-0000-0000-000000000008}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ETS2LA.Controls", "ETS2LA\ETS2LA.Controls\ETS2LA.Controls.csproj", "{00000000-0000-0000-0000-000000000009}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleLibrary", "Libraries\ExamplePlugin\ExampleLibrary.csproj", "{00000000-0000-0000-0000-000000000002}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TruckLib", "ETS2LA\TruckLib\TruckLib\TruckLib.csproj", "{00000000-0000-0000-0000-000000000010}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ETS2LA.Overlay", "ETS2LA\ETS2LA.Overlay\ETS2LA.Overlay.csproj", "{00000000-0000-0000-0000-0000000000011}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{F2E35B3E-9711-EDEC-6202-DB40BDEED14A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{07D57EEB-2F50-60C4-C011-FE4FA775C9A8}"
 EndProject
 Global
-    GlobalSection(SolutionConfigurationPlatforms) = preSolution
-        Debug|Any CPU = Debug|Any CPU
-        Release|Any CPU = Release|Any CPU
-    EndGlobalSection
-    GlobalSection(ProjectConfigurationPlatforms) = postSolution
-        {00000000-0000-0000-0000-000000000001}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-        {00000000-0000-0000-0000-000000000001}.Debug|Any CPU.Build.0 = Debug|Any CPU
-        {00000000-0000-0000-0000-000000000001}.Release|Any CPU.ActiveCfg = Release|Any CPU
-        {00000000-0000-0000-0000-000000000001}.Release|Any CPU.Build.0 = Release|Any CPU
-    EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{00000000-0000-0000-0000-000000000001}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00000000-0000-0000-0000-000000000001}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00000000-0000-0000-0000-000000000001}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{00000000-0000-0000-0000-000000000001}.Debug|x64.Build.0 = Debug|Any CPU
+		{00000000-0000-0000-0000-000000000001}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{00000000-0000-0000-0000-000000000001}.Debug|x86.Build.0 = Debug|Any CPU
+		{00000000-0000-0000-0000-000000000001}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00000000-0000-0000-0000-000000000001}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00000000-0000-0000-0000-000000000001}.Release|x64.ActiveCfg = Release|Any CPU
+		{00000000-0000-0000-0000-000000000001}.Release|x64.Build.0 = Release|Any CPU
+		{00000000-0000-0000-0000-000000000001}.Release|x86.ActiveCfg = Release|Any CPU
+		{00000000-0000-0000-0000-000000000001}.Release|x86.Build.0 = Release|Any CPU
+		{00000000-0000-0000-0000-000000000002}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00000000-0000-0000-0000-000000000002}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00000000-0000-0000-0000-000000000002}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{00000000-0000-0000-0000-000000000002}.Debug|x64.Build.0 = Debug|Any CPU
+		{00000000-0000-0000-0000-000000000002}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{00000000-0000-0000-0000-000000000002}.Debug|x86.Build.0 = Debug|Any CPU
+		{00000000-0000-0000-0000-000000000002}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00000000-0000-0000-0000-000000000002}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00000000-0000-0000-0000-000000000002}.Release|x64.ActiveCfg = Release|Any CPU
+		{00000000-0000-0000-0000-000000000002}.Release|x64.Build.0 = Release|Any CPU
+		{00000000-0000-0000-0000-000000000002}.Release|x86.ActiveCfg = Release|Any CPU
+		{00000000-0000-0000-0000-000000000002}.Release|x86.Build.0 = Release|Any CPU
+		{00000000-0000-0000-0000-000000000010}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{00000000-0000-0000-0000-000000000010}.Debug|x64.Build.0 = Debug|Any CPU
+		{00000000-0000-0000-0000-000000000010}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{00000000-0000-0000-0000-000000000010}.Debug|x86.Build.0 = Debug|Any CPU
+		{00000000-0000-0000-0000-000000000010}.Release|x64.ActiveCfg = Release|Any CPU
+		{00000000-0000-0000-0000-000000000010}.Release|x64.Build.0 = Release|Any CPU
+		{00000000-0000-0000-0000-000000000010}.Release|x86.ActiveCfg = Release|Any CPU
+		{00000000-0000-0000-0000-000000000010}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 EndGlobal

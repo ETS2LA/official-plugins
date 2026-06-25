@@ -1,0 +1,17 @@
+/home/tuomas/Documents/GitHub/example-plugin/Libraries/ExampleLibrary/bin/Debug/net10.0/ExampleLibrary.deps.json
+/home/tuomas/Documents/GitHub/example-plugin/Libraries/ExampleLibrary/bin/Debug/net10.0/ExampleLibrary.dll
+/home/tuomas/Documents/GitHub/example-plugin/Libraries/ExampleLibrary/bin/Debug/net10.0/ExampleLibrary.pdb
+/home/tuomas/Documents/GitHub/example-plugin/Libraries/ExampleLibrary/bin/Debug/net10.0/ETS2LA.Notifications.dll
+/home/tuomas/Documents/GitHub/example-plugin/Libraries/ExampleLibrary/bin/Debug/net10.0/ETS2LA.Notifications.pdb
+/home/tuomas/Documents/GitHub/example-plugin/Libraries/ExampleLibrary/obj/Debug/net10.0/ExampleLibrary.csproj.AssemblyReference.cache
+/home/tuomas/Documents/GitHub/example-plugin/Libraries/ExampleLibrary/obj/Debug/net10.0/Avalonia/Resources.Inputs.cache
+/home/tuomas/Documents/GitHub/example-plugin/Libraries/ExampleLibrary/obj/Debug/net10.0/ExampleLibrary.GeneratedMSBuildEditorConfig.editorconfig
+/home/tuomas/Documents/GitHub/example-plugin/Libraries/ExampleLibrary/obj/Debug/net10.0/ExampleLibrary.AssemblyInfoInputs.cache
+/home/tuomas/Documents/GitHub/example-plugin/Libraries/ExampleLibrary/obj/Debug/net10.0/ExampleLibrary.AssemblyInfo.cs
+/home/tuomas/Documents/GitHub/example-plugin/Libraries/ExampleLibrary/obj/Debug/net10.0/ExampleLibrary.csproj.CoreCompileInputs.cache
+/home/tuomas/Documents/GitHub/example-plugin/Libraries/ExampleLibrary/obj/Debug/net10.0/ExampleLibrary.sourcelink.json
+/home/tuomas/Documents/GitHub/example-plugin/Libraries/ExampleLibrary/obj/Debug/net10.0/ExampleL.12CBB2A2.Up2Date
+/home/tuomas/Documents/GitHub/example-plugin/Libraries/ExampleLibrary/obj/Debug/net10.0/ExampleLibrary.dll
+/home/tuomas/Documents/GitHub/example-plugin/Libraries/ExampleLibrary/obj/Debug/net10.0/refint/ExampleLibrary.dll
+/home/tuomas/Documents/GitHub/example-plugin/Libraries/ExampleLibrary/obj/Debug/net10.0/ExampleLibrary.pdb
+/home/tuomas/Documents/GitHub/example-plugin/Libraries/ExampleLibrary/obj/Debug/net10.0/ref/ExampleLibrary.dll

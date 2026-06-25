@@ -1,0 +1,17 @@
+/home/tuomas/Documents/GitHub/example-plugin/Plugins/ExamplePlugin/obj/Debug/net10.0/ExamplePlugin.GeneratedMSBuildEditorConfig.editorconfig
+/home/tuomas/Documents/GitHub/example-plugin/Plugins/ExamplePlugin/obj/Debug/net10.0/ExamplePlugin.AssemblyInfoInputs.cache
+/home/tuomas/Documents/GitHub/example-plugin/Plugins/ExamplePlugin/obj/Debug/net10.0/ExamplePlugin.AssemblyInfo.cs
+/home/tuomas/Documents/GitHub/example-plugin/Plugins/ExamplePlugin/obj/Debug/net10.0/ExamplePlugin.csproj.CoreCompileInputs.cache
+/home/tuomas/Documents/GitHub/example-plugin/Plugins/ExamplePlugin/obj/Debug/net10.0/ExamplePlugin.sourcelink.json
+/home/tuomas/Documents/GitHub/example-plugin/Plugins/ExamplePlugin/obj/Debug/net10.0/ExamplePlugin.csproj.AssemblyReference.cache
+/home/tuomas/Documents/GitHub/example-plugin/Plugins/ExamplePlugin/obj/Debug/net10.0/Avalonia/Resources.Inputs.cache
+/home/tuomas/Documents/GitHub/example-plugin/Plugins/ExamplePlugin/bin/Debug/net10.0/ExamplePlugin.deps.json
+/home/tuomas/Documents/GitHub/example-plugin/Plugins/ExamplePlugin/bin/Debug/net10.0/ExamplePlugin.dll
+/home/tuomas/Documents/GitHub/example-plugin/Plugins/ExamplePlugin/bin/Debug/net10.0/ExamplePlugin.pdb
+/home/tuomas/Documents/GitHub/example-plugin/Plugins/ExamplePlugin/bin/Debug/net10.0/ETS2LA.Notifications.dll
+/home/tuomas/Documents/GitHub/example-plugin/Plugins/ExamplePlugin/bin/Debug/net10.0/ETS2LA.Notifications.pdb
+/home/tuomas/Documents/GitHub/example-plugin/Plugins/ExamplePlugin/obj/Debug/net10.0/ExampleP.1424FD9D.Up2Date
+/home/tuomas/Documents/GitHub/example-plugin/Plugins/ExamplePlugin/obj/Debug/net10.0/ExamplePlugin.dll
+/home/tuomas/Documents/GitHub/example-plugin/Plugins/ExamplePlugin/obj/Debug/net10.0/refint/ExamplePlugin.dll
+/home/tuomas/Documents/GitHub/example-plugin/Plugins/ExamplePlugin/obj/Debug/net10.0/ExamplePlugin.pdb
+/home/tuomas/Documents/GitHub/example-plugin/Plugins/ExamplePlugin/obj/Debug/net10.0/ref/ExamplePlugin.dll
