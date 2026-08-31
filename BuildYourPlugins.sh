@@ -9,7 +9,7 @@ for root in Libraries Plugins; do
       dotnet build "$d/$name.csproj"
       # They are then copied to ETS2LA/ETS2LA/bin/Debug/net10.0/Libraries/Project.dll 
       # or ETS2LA/ETS2LA/bin/Debug/net10.0/Plugins/Project.dll depending on the type of project
-      out_dir="ETS2LA/ETS2LA/bin/Debug/net10.0/$root"
+      out_dir="/home/$USER/.local/share/ETS2LA/$root"
       mkdir -p "$out_dir"
       rm -f "$out_dir/$name.dll" 2>/dev/null
       cp "$d/bin/Debug/net10.0/$name.dll" "$out_dir/$name.dll"
