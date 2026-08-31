@@ -8,7 +8,6 @@ using TruckLib.ScsMap;
 using Hexa.NET.ImGui;
 using System.Numerics;
 using TruckLib;
-using Avalonia.Controls;
 using TruckLib.Models.Ppd;
 using ETS2LA.Game.Utils;
 using System.Xml;
