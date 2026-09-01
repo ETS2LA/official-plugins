@@ -41,6 +41,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ETS2LA.Notifications", "ETS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ETS2LA.ML", "ETS2LA\ETS2LA.ML\ETS2LA.ML.csproj", "{D67303AE-78FE-2A0B-589B-768DBE08DD90}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EndToEnd", "Plugins\EndToEnd\EndToEnd.csproj", "{FD2E85B7-1B07-46F6-80A5-0456FC625360}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -151,11 +153,24 @@ Global
 		{00000000-0000-0000-0000-000000000012}.Release|x64.Build.0 = Release|Any CPU
 		{00000000-0000-0000-0000-000000000012}.Release|x86.ActiveCfg = Release|Any CPU
 		{00000000-0000-0000-0000-000000000012}.Release|x86.Build.0 = Release|Any CPU
+		{FD2E85B7-1B07-46F6-80A5-0456FC625360}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD2E85B7-1B07-46F6-80A5-0456FC625360}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD2E85B7-1B07-46F6-80A5-0456FC625360}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FD2E85B7-1B07-46F6-80A5-0456FC625360}.Debug|x64.Build.0 = Debug|Any CPU
+		{FD2E85B7-1B07-46F6-80A5-0456FC625360}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FD2E85B7-1B07-46F6-80A5-0456FC625360}.Debug|x86.Build.0 = Debug|Any CPU
+		{FD2E85B7-1B07-46F6-80A5-0456FC625360}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD2E85B7-1B07-46F6-80A5-0456FC625360}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD2E85B7-1B07-46F6-80A5-0456FC625360}.Release|x64.ActiveCfg = Release|Any CPU
+		{FD2E85B7-1B07-46F6-80A5-0456FC625360}.Release|x64.Build.0 = Release|Any CPU
+		{FD2E85B7-1B07-46F6-80A5-0456FC625360}.Release|x86.ActiveCfg = Release|Any CPU
+		{FD2E85B7-1B07-46F6-80A5-0456FC625360}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B3D9FE49-78B3-4449-BF33-0F66FCC59CA1} = {07D57EEB-2F50-60C4-C011-FE4FA775C9A8}
+		{FD2E85B7-1B07-46F6-80A5-0456FC625360} = {07D57EEB-2F50-60C4-C011-FE4FA775C9A8}
 	EndGlobalSection
 EndGlobal
