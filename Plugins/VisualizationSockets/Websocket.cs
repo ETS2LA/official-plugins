@@ -12,6 +12,9 @@ public class Websocket
     private readonly ConcurrentDictionary<Guid, WebSocket> _clients = new();
     private CancellationTokenSource? _cts;
 
+    public event Action<string>? OnMessageReceived;
+    public event Action<WebSocket>? OnClientConnected;
+
     public Websocket(string prefix)
     {
         _listener = new HttpListener();
@@ -114,7 +117,9 @@ public class Websocket
 
         var socket = wsContext.WebSocket;
         var connectionId = Guid.NewGuid();
+
         _clients.TryAdd(connectionId, socket);
+        OnClientConnected?.Invoke(socket);
 
         var buffer = new byte[1024 * 4];
         try
@@ -122,6 +127,7 @@ public class Websocket
             while (socket.State == WebSocketState.Open)
             {
                 var result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                OnMessageReceived?.Invoke(Encoding.UTF8.GetString(buffer, 0, result.Count));
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
                     await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
