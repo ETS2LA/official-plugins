@@ -30,8 +30,10 @@ public class VisualizationSockets : Plugin
     private Stopwatch sinceLastStaticUpdate = new Stopwatch();
     private Websocket? fastServer;
     private Websocket? staticDataServer;
+    private bool staticNeedsToSendMoreData = false;
 
-    private INode[] nearbyNodes = Array.Empty<INode>();    
+    private HashSet<ulong> nearbyNodes = new HashSet<ulong>();
+    private HashSet<ulong> nearbyRoads = new HashSet<ulong>();
 
     public override void OnEnable()
     {
@@ -41,7 +43,8 @@ public class VisualizationSockets : Plugin
         staticDataServer = new Websocket("http://localhost:37526/");
         staticDataServer.OnClientConnected += (socket) =>
         {
-            nearbyNodes = Array.Empty<INode>();
+            nearbyNodes.Clear();
+            nearbyRoads.Clear();
             sinceLastStaticUpdate.Start();
             Logger.Info("Reset static data due to new client.");
         };
@@ -75,7 +78,7 @@ public class VisualizationSockets : Plugin
             }.ToJson()
         );
 
-        if (sinceLastStaticUpdate.ElapsedMilliseconds > 1000 && ApplicationState.Current.RunningGame != null)
+        if ((sinceLastStaticUpdate.ElapsedMilliseconds > 1000 || staticNeedsToSendMoreData) && ApplicationState.Current.RunningGame != null)
         {
             sinceLastStaticUpdate.Restart();
             var mapData = ApplicationState.Current.RunningGame.GetMapData();
@@ -83,52 +86,129 @@ public class VisualizationSockets : Plugin
                 return;
             
             Vector3Double center = GameTelemetry.Current.GetCurrentData().truckPlacement.coordinate;
-            double minX = center.X - 250;
-            double maxX = center.X + 250;
-            double minZ = center.Z - 250;
-            double maxZ = center.Z + 250;
+            double minX = center.X - 512;
+            double maxX = center.X + 512;
+            double minZ = center.Z - 512;
+            double maxZ = center.Z + 512;
             var nodes = mapData.Nodes.Within(minX, minZ, maxX, maxZ);
 
             List<INode> addedNodes = new List<INode>();
             List<INode> removedNodes = new List<INode>();
+            List<Road> addedRoads = new List<Road>();
+            List<Road> removedRoads = new List<Road>();
+
             int totalChanges = 0;
+
+            // Removing nodes that are no longer nearby
             foreach (var node in nearbyNodes)
             {
                 if (totalChanges > 100)
                     break;
 
-                if (!nodes.Contains(node))
+                if (!nodes.Any(n => n.Uid == node))
                 {
-                    removedNodes.Add(node);
+                    removedNodes.Add(mapData.Nodes[node]);
+                    nearbyNodes.Remove(node);
                     totalChanges++;
+                    if (mapData.Nodes[node].ForwardItem is Road forwardRoad)
+                    {
+                        if (nearbyRoads.Contains(forwardRoad.Uid))
+                        {
+                            nearbyRoads.Remove(forwardRoad.Uid);
+                            removedRoads.Add(forwardRoad);
+                        }
+                    }
+                    if (mapData.Nodes[node].BackwardItem is Road backwardRoad)
+                    {
+                        if (nearbyRoads.Contains(backwardRoad.Uid))
+                        {
+                            nearbyRoads.Remove(backwardRoad.Uid);
+                            removedRoads.Add(backwardRoad);
+                        }
+                    }
                 }
             }
+
+            // Adding new nodes that are now nearby
             foreach (var node in nodes)
             {
                 if (totalChanges > 100)
                     break;
                 
-                if (!nearbyNodes.Contains(node))
+                if (!nearbyNodes.Contains(node.Uid))
                 {
                     addedNodes.Add(node);
+                    nearbyNodes.Add(node.Uid);
                     totalChanges++;
+
+                    // Check items for this current node
+                    var front = node.ForwardItem;
+                    var back = node.BackwardItem;
+                    if (front != null && front is Road forwardRoad)
+                    {
+                        if (!nearbyRoads.Contains(forwardRoad.Uid))
+                        {
+                            nearbyRoads.Add(forwardRoad.Uid);
+                            addedRoads.Add(forwardRoad);
+
+                            // Check this road's nodes in case they are not already added
+                            if (!nearbyNodes.Contains(forwardRoad.Node.Uid))
+                            {
+                                addedNodes.Add(forwardRoad.Node);
+                                nearbyNodes.Add(forwardRoad.Node.Uid);
+                            }
+                            if (!nearbyNodes.Contains(forwardRoad.ForwardNode.Uid))
+                            {
+                                addedNodes.Add(forwardRoad.ForwardNode);
+                                nearbyNodes.Add(forwardRoad.ForwardNode.Uid);
+                            }
+                        }
+                    }
+                    if (back != null && back is Road backwardRoad)
+                    {
+                        if (!nearbyRoads.Contains(backwardRoad.Uid))
+                        {
+                            nearbyRoads.Add(backwardRoad.Uid);
+                            addedRoads.Add(backwardRoad);
+
+                            // Check this road's nodes in case they are not already added
+                            if (!nearbyNodes.Contains(backwardRoad.Node.Uid))
+                            {
+                                addedNodes.Add(backwardRoad.Node);
+                                nearbyNodes.Add(backwardRoad.Node.Uid);
+                            }
+                            if (!nearbyNodes.Contains(backwardRoad.ForwardNode.Uid))
+                            {
+                                addedNodes.Add(backwardRoad.ForwardNode);
+                                nearbyNodes.Add(backwardRoad.ForwardNode.Uid);
+                            }
+                        }
+                    }
                 }
             }
             
-            if (addedNodes.Count == 0 && removedNodes.Count == 0)
+            if (addedNodes.Count == 0 && removedNodes.Count == 0 
+             && addedRoads.Count == 0 && removedRoads.Count == 0)
                 return;
 
-            Logger.Info($"Sending static data update. Added nodes: {addedNodes.Count}, Removed nodes: {removedNodes.Count}");
+            if (totalChanges > 100)
+                staticNeedsToSendMoreData = true;
+            else 
+                staticNeedsToSendMoreData = false;
+
+            Logger.Info($"Sending static data update:\nNodes added: {addedNodes.Count}, removed: {removedNodes.Count}\nRoads added: {addedRoads.Count}, removed: {removedRoads.Count}");
             SendStaticData(
                 new StaticDataMessage
                 {
                     add = new StaticDataAdditions
                     {
-                        nodes = addedNodes.ToDictionary(n => n.Uid, n => new SocketNode(n))
+                        nodes = addedNodes.ToDictionary(n => n.Uid.ToString(), n => new SocketNode(n)),
+                        roads = addedRoads.Select(r => new SocketRoad(r)).ToList()
                     },
                     remove = new StaticDataRemovals
                     {
-                        nodes = removedNodes.Select(n => n.Uid).ToList()
+                        nodes = removedNodes.Select(n => n.Uid.ToString()).ToList(),
+                        roads = removedRoads.Select(r => r.Uid.ToString()).ToList()
                     }
                 }.ToJson()
             );

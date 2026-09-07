@@ -1,16 +1,19 @@
 using System;
 using System.Numerics;
+using Newtonsoft.Json;
+
 using ETS2LA.Game.SDK;
+using ETS2LA.Game.Data;
+
 using TruckLib;
 using TruckLib.ScsMap;
-using Newtonsoft.Json;
 
 namespace VisualizationSockets;
 
 [Serializable]
 public struct SocketNode
 {
-    public ulong id;
+    public string id;
     public Vector3 position;
     public Quaternion rotation;
 
@@ -21,7 +24,7 @@ public struct SocketNode
 
     public SocketNode(INode node)
     {
-        this.id = node.Uid;
+        this.id = node.Uid.ToString();
         this.position = node.Position;
         this.rotation = node.Rotation;
     }
@@ -30,12 +33,35 @@ public struct SocketNode
 [Serializable]
 public struct SocketRoad
 {
-    public ulong id;
-    public SocketNode node;
-    public SocketNode forwardNode;
-    public float[] laneOffsets;
+    public string id;
+    public string node;
+    public string forwardNode;
+    public float[] laneOffsetsStart = new float[0];
+    public float[] laneOffsetsEnd = new float[0];
     public int leftLaneCount;
     public int rightLaneCount;
+
+    public SocketRoad()
+    {
+
+    }
+
+    public SocketRoad(Road road)
+    {
+        this.id = road.Uid.ToString();
+        this.node = road.Node.Uid.ToString();
+        this.forwardNode = road.ForwardNode.Uid.ToString();
+        
+        var parsedRoad = new ParsedRoad(road);
+        this.laneOffsetsEnd = parsedRoad.LeftLaneOffsetsEnd.Concat(parsedRoad.RightLaneOffsetsEnd).ToArray();
+        this.leftLaneCount = parsedRoad.GetLaneCount(Side.Left);
+        this.rightLaneCount = parsedRoad.GetLaneCount(Side.Right);
+
+        if (parsedRoad.LeftLaneOffsetsStart != null && parsedRoad.RightLaneOffsetsStart != null)
+        {
+            this.laneOffsetsStart = parsedRoad.LeftLaneOffsetsStart.Concat(parsedRoad.RightLaneOffsetsStart).ToArray();
+        }
+    }
 }
 
 [Serializable]
@@ -61,7 +87,7 @@ public struct SocketTrailer
 [Serializable]
 public struct SocketVehicle
 {
-    public ulong id;
+    public string id;
     public Vector3 position = Vector3.Zero;
     public Quaternion rotation = Quaternion.Identity;
     public Vector3 size = Vector3.Zero;
@@ -72,7 +98,7 @@ public struct SocketVehicle
 
     }
 
-    public SocketVehicle(ulong id, Vector3 position, Quaternion rotation, Vector3 size, List<SocketTrailer> trailers)
+    public SocketVehicle(string id, Vector3 position, Quaternion rotation, Vector3 size, List<SocketTrailer> trailers)
     {
         this.id = id;
         this.position = position;
@@ -83,7 +109,7 @@ public struct SocketVehicle
 
     public SocketVehicle(TrafficVehicle trafficVehicle)
     {
-        this.id = (ulong)trafficVehicle.id;
+        this.id = trafficVehicle.id.ToString();
         this.position = trafficVehicle.Position;
         this.rotation = trafficVehicle.Rotation;
         this.size = trafficVehicle.Size;
@@ -98,7 +124,7 @@ public struct SocketVehicle
 
     public SocketVehicle(ParkedVehicle parkedVehicle)
     {
-        this.id = (ulong)parkedVehicle.id;
+        this.id = parkedVehicle.id.ToString();
         this.position = parkedVehicle.Position;
         this.rotation = parkedVehicle.Rotation;
         this.size = parkedVehicle.Size;
@@ -119,7 +145,7 @@ public struct DataFrame
 
     public SocketTelemetryData telemetryData;
 
-    public Dictionary<ulong, SocketNode> nodes = new Dictionary<ulong, SocketNode>();
+    public Dictionary<string, SocketNode> nodes = new Dictionary<string, SocketNode>();
     public List<SocketRoad> roads = new List<SocketRoad>();
     public List<SocketVehicle> vehicles = new List<SocketVehicle>();
 
@@ -127,7 +153,7 @@ public struct DataFrame
     {
         timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         telemetryData = new SocketTelemetryData();
-        nodes = new Dictionary<ulong, SocketNode>();
+        nodes = new Dictionary<string, SocketNode>();
         roads = new List<SocketRoad>();
         vehicles = new List<SocketVehicle>();
     }
@@ -141,12 +167,12 @@ public struct DataFrame
 [Serializable]
 public struct StaticDataAdditions
 {
-    public Dictionary<ulong, SocketNode> nodes = new Dictionary<ulong, SocketNode>();
+    public Dictionary<string, SocketNode> nodes = new Dictionary<string, SocketNode>();
     public List<SocketRoad> roads = new List<SocketRoad>();
 
     public StaticDataAdditions()
     {
-        nodes = new Dictionary<ulong, SocketNode>();
+        nodes = new Dictionary<string, SocketNode>();
         roads = new List<SocketRoad>();
     }
 }
@@ -154,13 +180,13 @@ public struct StaticDataAdditions
 [Serializable]
 public struct StaticDataRemovals
 {
-    public List<ulong> nodes = new List<ulong>();
-    public List<ulong> roads = new List<ulong>();
+    public List<string> nodes = new List<string>();
+    public List<string> roads = new List<string>();
 
     public StaticDataRemovals()
     {
-        nodes = new List<ulong>();
-        roads = new List<ulong>();
+        nodes = new List<string>();
+        roads = new List<string>();
     }
 }
 
