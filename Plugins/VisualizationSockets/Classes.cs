@@ -19,7 +19,7 @@ public struct SocketNode
 
     public SocketNode()
     {
-
+        this.id = Guid.NewGuid().ToString();
     }
 
     public SocketNode(INode node)
@@ -36,6 +36,8 @@ public struct SocketRoad
     public string id;
     public string node;
     public string forwardNode;
+    public float length;
+
     public float[] laneOffsetsStart = new float[0];
     public float[] laneOffsetsEnd = new float[0];
     public int leftLaneCount;
@@ -43,7 +45,9 @@ public struct SocketRoad
 
     public SocketRoad()
     {
-
+        this.id = Guid.NewGuid().ToString();
+        this.node = Guid.NewGuid().ToString();
+        this.forwardNode = Guid.NewGuid().ToString();
     }
 
     public SocketRoad(Road road)
@@ -51,6 +55,7 @@ public struct SocketRoad
         this.id = road.Uid.ToString();
         this.node = road.Node.Uid.ToString();
         this.forwardNode = road.ForwardNode.Uid.ToString();
+        this.length = road.Length;
         
         var parsedRoad = new ParsedRoad(road);
         this.laneOffsetsEnd = parsedRoad.LeftLaneOffsetsEnd.Concat(parsedRoad.RightLaneOffsetsEnd).ToArray();
@@ -61,6 +66,57 @@ public struct SocketRoad
         {
             this.laneOffsetsStart = parsedRoad.LeftLaneOffsetsStart.Concat(parsedRoad.RightLaneOffsetsStart).ToArray();
         }
+    }
+}
+
+[Serializable]
+public struct SocketPrefabSegment
+{
+    public Vector3 startPosition;
+    public Vector3 endPosition;
+    public Quaternion startRotation;
+    public Quaternion endRotation;
+
+    public float length;
+}
+
+[Serializable]
+public struct SocketPrefab
+{
+    public string id;
+    public List<SocketPrefabSegment> segments = new List<SocketPrefabSegment>();
+
+    public Vector3 prefabStart = Vector3.Zero;
+    public Vector3 rootNodePosition = Vector3.Zero;
+    public Vector3 prefabRotation = Vector3.Zero;
+
+    public SocketPrefab()
+    {
+        this.id = Guid.NewGuid().ToString();
+    }
+
+    public SocketPrefab(Prefab prefab)
+    {
+        this.id = prefab.Uid.ToString();
+        var parsedPrefab = new ParsedPrefab(prefab);
+        if (parsedPrefab.Descriptor == null)
+        {
+            return;
+        }
+
+        this.segments = parsedPrefab.Descriptor.NavCurves.Select(s => new SocketPrefabSegment
+        {
+            startPosition = s.StartPosition,
+            endPosition = s.EndPosition,
+            startRotation = s.StartRotation,
+            endRotation = s.EndRotation,
+            length = s.Length
+        }).ToList();
+
+        int origin = prefab.Origin;
+        this.prefabStart = prefab.Nodes[0].Position - parsedPrefab.Descriptor.Nodes[origin].Position;
+        this.rootNodePosition = prefab.Nodes[0].Position;
+        this.prefabRotation = prefab.Nodes[0].Rotation.ToEuler() - MathEx.GetNodeRotation(parsedPrefab.Descriptor.Nodes[origin].Direction).ToEuler();
     }
 }
 
@@ -95,7 +151,7 @@ public struct SocketVehicle
 
     public SocketVehicle()
     {
-
+        this.id = Guid.NewGuid().ToString();
     }
 
     public SocketVehicle(string id, Vector3 position, Quaternion rotation, Vector3 size, List<SocketTrailer> trailers)
@@ -169,11 +225,13 @@ public struct StaticDataAdditions
 {
     public Dictionary<string, SocketNode> nodes = new Dictionary<string, SocketNode>();
     public List<SocketRoad> roads = new List<SocketRoad>();
+    public List<SocketPrefab> prefabs = new List<SocketPrefab>();
 
     public StaticDataAdditions()
     {
         nodes = new Dictionary<string, SocketNode>();
         roads = new List<SocketRoad>();
+        prefabs = new List<SocketPrefab>();
     }
 }
 
@@ -182,11 +240,13 @@ public struct StaticDataRemovals
 {
     public List<string> nodes = new List<string>();
     public List<string> roads = new List<string>();
+    public List<string> prefabs = new List<string>();
 
     public StaticDataRemovals()
     {
         nodes = new List<string>();
         roads = new List<string>();
+        prefabs = new List<string>();
     }
 }
 
