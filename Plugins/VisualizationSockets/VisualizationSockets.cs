@@ -8,6 +8,7 @@ using TruckLib.ScsMap;
 
 using System.Numerics;
 using System.Diagnostics;
+using ETS2LA.Game.PmdFiles;
 
 namespace VisualizationSockets;
 
@@ -35,6 +36,7 @@ public class VisualizationSockets : Plugin
     private HashSet<ulong> sentNodes = new();
     private HashSet<ulong> sentRoads = new();
     private HashSet<ulong> sentPrefabs = new();
+    private HashSet<ulong> sentModels = new();
 
     public override void OnEnable()
     {
@@ -47,6 +49,7 @@ public class VisualizationSockets : Plugin
             sentNodes.Clear();
             sentRoads.Clear();
             sentPrefabs.Clear();
+            sentModels.Clear();
             sinceLastStaticUpdate.Restart();
 
             Logger.Info("Reset static data due to new client.");
@@ -119,6 +122,7 @@ public class VisualizationSockets : Plugin
 
         var desiredNodes = new Dictionary<ulong, INode>();
         var desiredRoads = new Dictionary<ulong, Road>();
+        var desiredModels = new Dictionary<ulong, Model>();
         var desiredPrefabs = new Dictionary<ulong, Prefab>();
         foreach (var node in nodes)
         {
@@ -131,6 +135,10 @@ public class VisualizationSockets : Plugin
                     break;
                 case Prefab prefab:
                     desiredPrefabs[prefab.Uid] = prefab;
+                    break;
+                case Model model:
+                    desiredModels[model.Uid] = model;
+                    desiredNodes[model.Node.Uid] = model.Node;
                     break;
             }
         }
@@ -150,6 +158,11 @@ public class VisualizationSockets : Plugin
             .Select(x => x.Value)
             .ToList();
 
+        var addedModels = desiredModels
+            .Where(x => !sentModels.Contains(x.Key))
+            .Select(x => x.Value)
+            .ToList();
+
         var removedNodes = sentNodes
             .Where(id => !desiredNodes.ContainsKey(id))
             .ToList();
@@ -162,13 +175,19 @@ public class VisualizationSockets : Plugin
             .Where(id => !desiredPrefabs.ContainsKey(id))
             .ToList();
 
+        var removedModels = sentModels
+            .Where(id => !desiredModels.ContainsKey(id))
+            .ToList();
+
         if (
             addedNodes.Count == 0 &&
             addedRoads.Count == 0 &&
             addedPrefabs.Count == 0 &&
+            addedModels.Count == 0 &&
             removedNodes.Count == 0 &&
             removedRoads.Count == 0 &&
-            removedPrefabs.Count == 0
+            removedPrefabs.Count == 0 &&
+            removedModels.Count == 0
         ) return;
 
         Logger.Info(
@@ -178,7 +197,9 @@ public class VisualizationSockets : Plugin
             $"+{addedRoads.Count} roads, " +
             $"-{removedRoads.Count} roads, " +
             $"+{addedPrefabs.Count} prefabs, " +
-            $"-{removedPrefabs.Count} prefabs"
+            $"-{removedPrefabs.Count} prefabs, " +
+            $"+{addedModels.Count} models, " +
+            $"-{removedModels.Count} models"
         );
 
         SendStaticData(
@@ -188,14 +209,16 @@ public class VisualizationSockets : Plugin
                 {
                     nodes = addedNodes.ToDictionary(n => n.Uid.ToString(), n => new SocketNode(n)),
                     roads = addedRoads.Select(r => new SocketRoad(r)).ToList(),
-                    prefabs = addedPrefabs.Select(p => new SocketPrefab(p)).ToList()
+                    prefabs = addedPrefabs.Select(p => new SocketPrefab(p)).ToList(),
+                    models = addedModels.Select(m => new SocketModel(m)).ToList()
                 },
 
                 remove = new StaticDataRemovals
                 {
                     nodes = removedNodes.Select(id => id.ToString()).ToList(),
                     roads = removedRoads.Select(id => id.ToString()).ToList(),
-                    prefabs = removedPrefabs.Select(id => id.ToString()).ToList()
+                    prefabs = removedPrefabs.Select(id => id.ToString()).ToList(),
+                    models = removedModels.Select(id => id.ToString()).ToList()
                 }
             }.ToJson()
         );
@@ -203,6 +226,7 @@ public class VisualizationSockets : Plugin
         sentNodes = desiredNodes.Keys.ToHashSet();
         sentRoads = desiredRoads.Keys.ToHashSet();
         sentPrefabs = desiredPrefabs.Keys.ToHashSet();
+        sentModels = desiredModels.Keys.ToHashSet();
     }
 
     public override void OnDisable()

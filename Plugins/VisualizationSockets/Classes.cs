@@ -4,9 +4,11 @@ using Newtonsoft.Json;
 
 using ETS2LA.Game.SDK;
 using ETS2LA.Game.Data;
+using ETS2LA.Game.PmdFiles;
 
 using TruckLib;
 using TruckLib.ScsMap;
+using TruckLib.Models;
 
 namespace VisualizationSockets;
 
@@ -121,6 +123,87 @@ public struct SocketPrefab
 }
 
 [Serializable]
+public struct SocketBoundingBox
+{
+    public Vector3 min = Vector3.Zero;
+    public Vector3 max = Vector3.Zero;
+    
+    public SocketBoundingBox()
+    {
+
+    }
+
+    public SocketBoundingBox(AxisAlignedBox box)
+    {
+        this.min = box.Start;
+        this.max = box.End;
+    }
+}
+
+[Serializable]
+public struct SocketModelPiece
+{
+    public SocketBoundingBox boundingBox = new SocketBoundingBox();
+    public Vector3 boundingBoxCenter = Vector3.Zero;
+
+    public SocketModelPiece()
+    {
+
+    }
+
+    public SocketModelPiece(Piece piece)
+    {
+        this.boundingBox = new SocketBoundingBox(piece.BoundingBox);
+        this.boundingBoxCenter = piece.BoundingBoxCenter;
+    }
+}
+
+[Serializable]
+public struct SocketModelPart
+{
+    public List<SocketModelPiece> pieces = new List<SocketModelPiece>();
+
+    public SocketModelPart()
+    {
+
+    }
+
+    public SocketModelPart(Part part)
+    {
+        this.pieces = part.Pieces.Select(p => new SocketModelPiece(p)).ToList();
+    }
+}
+
+[Serializable]
+public struct SocketModel
+{
+    public string id = "";
+    public string node = "";
+    public Vector3 scale = Vector3.One;
+    public SocketBoundingBox boundingBox = new SocketBoundingBox();
+    public Vector3 boundingBoxCenter = Vector3.Zero;
+    public List<SocketModelPart> parts = new List<SocketModelPart>();
+
+    public SocketModel() { }
+
+    public SocketModel(TruckLib.ScsMap.Model model)
+    {
+        TruckLib.Models.Model? pmdModel = PmdFileHandler.Current.GetPmdModel(model.Name.ToString());
+        if (pmdModel == null)
+        {
+            return;
+        }
+
+        this.id = model.Uid.ToString();
+        this.node = model.Node.Uid.ToString();
+        this.scale = model.Scale;
+        this.boundingBox = new SocketBoundingBox(pmdModel.BoundingBox);
+        this.boundingBoxCenter = pmdModel.BoundingBoxCenter;
+        this.parts = pmdModel.Parts.Select(p => new SocketModelPart(p)).ToList();
+    }   
+}
+
+[Serializable]
 public struct SocketTrailer
 {
     public Vector3 position = Vector3.Zero;
@@ -226,12 +309,14 @@ public struct StaticDataAdditions
     public Dictionary<string, SocketNode> nodes = new Dictionary<string, SocketNode>();
     public List<SocketRoad> roads = new List<SocketRoad>();
     public List<SocketPrefab> prefabs = new List<SocketPrefab>();
+    public List<SocketModel> models = new List<SocketModel>();
 
     public StaticDataAdditions()
     {
         nodes = new Dictionary<string, SocketNode>();
         roads = new List<SocketRoad>();
         prefabs = new List<SocketPrefab>();
+        models = new List<SocketModel>();
     }
 }
 
@@ -241,12 +326,14 @@ public struct StaticDataRemovals
     public List<string> nodes = new List<string>();
     public List<string> roads = new List<string>();
     public List<string> prefabs = new List<string>();
+    public List<string> models = new List<string>();
 
     public StaticDataRemovals()
     {
         nodes = new List<string>();
         roads = new List<string>();
         prefabs = new List<string>();
+        models = new List<string>();
     }
 }
 
