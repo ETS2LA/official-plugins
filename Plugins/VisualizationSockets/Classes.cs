@@ -79,6 +79,10 @@ public struct SocketPrefabSegment
     public Quaternion startRotation;
     public Quaternion endRotation;
 
+
+    public int[] nextSegments;
+    public int[] previousSegments;
+    public string id;
     public float length;
 }
 
@@ -106,14 +110,22 @@ public struct SocketPrefab
             return;
         }
 
-        this.segments = parsedPrefab.Descriptor.NavCurves.Select(s => new SocketPrefabSegment
+        this.segments = new List<SocketPrefabSegment>();
+        for (int i = 0; i < parsedPrefab.Descriptor.NavCurves.Count; i++)
         {
-            startPosition = s.StartPosition,
-            endPosition = s.EndPosition,
-            startRotation = s.StartRotation,
-            endRotation = s.EndRotation,
-            length = s.Length
-        }).ToList();
+            var curve = parsedPrefab.Descriptor.NavCurves[i];
+            this.segments.Add(new SocketPrefabSegment
+            {
+                startPosition = curve.StartPosition,
+                endPosition = curve.EndPosition,
+                startRotation = curve.StartRotation,
+                endRotation = curve.EndRotation,
+                length = curve.Length,
+                id = i.ToString(),
+                nextSegments = curve.NextLines.ToArray(),
+                previousSegments = curve.PreviousLines.ToArray()
+            });
+        }
 
         int origin = prefab.Origin;
         this.prefabStart = prefab.Nodes[0].Position - parsedPrefab.Descriptor.Nodes[origin].Position;
