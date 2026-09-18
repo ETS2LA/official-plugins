@@ -239,6 +239,7 @@ public struct SocketTrailer
 public struct SocketVehicle
 {
     public string id;
+    public float speed;
     public Vector3 position = Vector3.Zero;
     public Quaternion rotation = Quaternion.Identity;
     public Vector3 size = Vector3.Zero;
@@ -247,11 +248,13 @@ public struct SocketVehicle
     public SocketVehicle()
     {
         this.id = Guid.NewGuid().ToString();
+        this.speed = 0f;
     }
 
-    public SocketVehicle(string id, Vector3 position, Quaternion rotation, Vector3 size, List<SocketTrailer> trailers)
+    public SocketVehicle(string id, float speed, Vector3 position, Quaternion rotation, Vector3 size, List<SocketTrailer> trailers)
     {
         this.id = id;
+        this.speed = speed;
         this.position = position;
         this.rotation = rotation;
         this.size = size;
@@ -261,6 +264,7 @@ public struct SocketVehicle
     public SocketVehicle(TrafficVehicle trafficVehicle)
     {
         this.id = trafficVehicle.id.ToString();
+        this.speed = trafficVehicle.speed;
         this.position = trafficVehicle.Position;
         this.rotation = trafficVehicle.Rotation;
         this.size = trafficVehicle.Size;
@@ -276,6 +280,7 @@ public struct SocketVehicle
     public SocketVehicle(ParkedVehicle parkedVehicle)
     {
         this.id = parkedVehicle.id.ToString();
+        this.speed = 0;
         this.position = parkedVehicle.Position;
         this.rotation = parkedVehicle.Rotation;
         this.size = parkedVehicle.Size;
@@ -287,6 +292,25 @@ public struct SocketTelemetryData
 {
     public Vector3 position;
     public Quaternion rotation;
+    
+    public float speed;
+    public float speedLimit;
+    public float throttle;
+    public float brake;
+    public float clutch;
+    public float steering;
+}
+
+[Serializable]
+public struct SocketSelfDrivingData
+{
+    public List<Vector3> pathPoints;
+    public List<int> targetVehicles;
+    public List<int> targetSemaphores;
+
+    public float targetSpeed;
+    public bool isControllingSteering;
+    public bool isControllingAcceleration;
 }
 
 [Serializable]
@@ -295,6 +319,7 @@ public struct DataFrame
     public long timestamp;
 
     public SocketTelemetryData telemetryData;
+    public SocketSelfDrivingData selfDrivingData;
 
     public Dictionary<string, SocketNode> nodes = new Dictionary<string, SocketNode>();
     public List<SocketRoad> roads = new List<SocketRoad>();
@@ -304,6 +329,7 @@ public struct DataFrame
     {
         timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         telemetryData = new SocketTelemetryData();
+        selfDrivingData = new SocketSelfDrivingData();
         nodes = new Dictionary<string, SocketNode>();
         roads = new List<SocketRoad>();
         vehicles = new List<SocketVehicle>();

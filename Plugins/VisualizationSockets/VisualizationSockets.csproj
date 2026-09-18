@@ -41,6 +41,11 @@
     <ProjectReference Include="..\..\ETS2LA\TruckLib\TruckLib\TruckLib.csproj">
       <Private>false</Private>
     </ProjectReference>
+
+    <Reference Include="PathLib">
+      <HintPath>PathLib.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

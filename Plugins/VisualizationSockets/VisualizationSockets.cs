@@ -1,14 +1,19 @@
 ﻿using ETS2LA.Game.Telemetry;
 using ETS2LA.Game.SDK;
 using ETS2LA.Game;
+using ETS2LA.Backend;
+using ETS2LA.Game.Data;
+using ETS2LA.Backend.Events;
 using ETS2LA.State;
 using ETS2LA.Shared;
 using ETS2LA.Logging;
+using ETS2LA.Game.PmdFiles;
 using TruckLib.ScsMap;
+using PathLib;
+using TruckLib;
 
 using System.Numerics;
 using System.Diagnostics;
-using ETS2LA.Game.PmdFiles;
 
 namespace VisualizationSockets;
 
@@ -24,6 +29,9 @@ public class VisualizationSockets : Plugin
         Icon = "https://avatars.githubusercontent.com/u/162675991?s=128",
         AuthorName = "Tumppi066",
         AuthorWebsite = "https://tumppi066.fi",
+        Dependencies = {
+            "tumppi066.pathlib"
+        }
     };
 
     public override float TickRate => 10f;
@@ -37,6 +45,12 @@ public class VisualizationSockets : Plugin
     private HashSet<ulong> sentRoads = new();
     private HashSet<ulong> sentPrefabs = new();
     private HashSet<ulong> sentModels = new();
+
+    private PlannedPathData? pathData;
+    private BaseVehicle? leadingVehicle;
+    private ParsedSemaphore? targetSemaphore;
+    private bool didSubscribeToData = false;
+
 
     public override void OnEnable()
     {
@@ -54,6 +68,11 @@ public class VisualizationSockets : Plugin
 
             Logger.Info("Reset static data due to new client.");
         };
+
+        Events.Current.Subscribe<PlannedPathData>("Pathfinding.PlannedPathData", data => { pathData = data; });
+        Events.Current.Subscribe<BaseVehicle?>("AdaptiveCruiseControl.LeadingVehicle", data => { leadingVehicle = data; });
+        Events.Current.Subscribe<ParsedSemaphore?>("AdaptiveCruiseControl.TargetParsedSemaphore", data => { targetSemaphore = data; });
+        didSubscribeToData = true;
 
         fastServer.Start();
         staticDataServer.Start();
@@ -78,7 +97,23 @@ public class VisualizationSockets : Plugin
                 telemetryData = new SocketTelemetryData
                 {
                     position = CameraProvider.Current.GetCurrentData().truckPosition,
-                    rotation = CameraProvider.Current.GetCurrentData().truckRotation
+                    rotation = CameraProvider.Current.GetCurrentData().truckRotation,
+                    speed = GameTelemetry.Current.GetCurrentData().truckFloat.speed,
+                    speedLimit = GameTelemetry.Current.GetCurrentData().truckFloat.speedLimit,
+                    throttle = GameTelemetry.Current.GetCurrentData().truckFloat.gameThrottle,
+                    brake = GameTelemetry.Current.GetCurrentData().truckFloat.gameBrake,
+                    clutch = GameTelemetry.Current.GetCurrentData().truckFloat.gameClutch,
+                    steering = GameTelemetry.Current.GetCurrentData().truckFloat.gameSteer,
+                },
+                selfDrivingData = new SocketSelfDrivingData
+                {
+                    pathPoints = GetPathPoints(),
+                    targetVehicles = [leadingVehicle is TrafficVehicle trafficVehicle ? trafficVehicle.id : -1],
+                    // TODO: ParsedSemaphore is the wrong one, edit ACC to send the right one
+                    targetSemaphores = [targetSemaphore is ParsedSemaphore parsedSemaphore ? (int)parsedSemaphore.Semaphore.SemaphoreId : -1],
+                    targetSpeed = ApplicationState.Current.DesiredSpeed,
+                    isControllingSteering = ApplicationState.Current.DrivingMode >= DrivingMode.FullSelfDriving && PluginBackend.Current.PluginHandler?.LoadedPlugins.Any(p => p.Info.Id == "tumppi066.laneassist") == true,
+                    isControllingAcceleration = ApplicationState.Current.DrivingMode <= DrivingMode.FullSelfDriving && PluginBackend.Current.PluginHandler?.LoadedPlugins.Any(p => p.Info.Id == "tumppi066.adaptivecruisecontrol") == true
                 },
                 vehicles = vehicles,
             }.ToJson()
@@ -89,6 +124,28 @@ public class VisualizationSockets : Plugin
             UpdateStaticData();
             sinceLastStaticUpdate.Restart();
         }
+    }
+
+    private List<Vector3> GetPathPoints()
+    {
+        if (pathData == null || pathData.HasError)
+            return new List<Vector3>();
+
+        Vector3 truckPos = CameraProvider.Current.GetCurrentData().truckPosition;
+        float steeringPointDistance = 2f;
+
+        float closestFactor = pathData.GetFactorForPoint(truckPos);
+        float closestDist = closestFactor * pathData.TotalLength;
+        List<OrientedPoint> steeringPoints = new List<OrientedPoint>();
+        for (int i = 0; i < 20; i++)
+        {
+            OrientedPoint? point = pathData.InterpolateDist(closestDist + i * steeringPointDistance, affectLaneChange: i == 0);
+            if (point != null) {
+                steeringPoints.Add(point.Value);
+            }
+        }
+
+        return steeringPoints.Select(p => p.Position).ToList();
     }
 
     private void UpdateStaticData()
