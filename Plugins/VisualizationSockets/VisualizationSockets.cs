@@ -51,10 +51,10 @@ public class VisualizationSockets : Plugin
     private ParsedSemaphore? targetSemaphore;
     private bool didSubscribeToData = false;
 
-
     public override void OnEnable()
     {
         base.OnEnable();
+        GameTelemetry.Current.ReadTrailerData = true;
 
         fastServer = new Websocket("http://localhost:37525/");
         staticDataServer = new Websocket("http://localhost:37526/");
@@ -69,10 +69,13 @@ public class VisualizationSockets : Plugin
             Logger.Info("Reset static data due to new client.");
         };
 
-        Events.Current.Subscribe<PlannedPathData>("Pathfinding.PlannedPathData", data => { pathData = data; });
-        Events.Current.Subscribe<BaseVehicle?>("AdaptiveCruiseControl.LeadingVehicle", data => { leadingVehicle = data; });
-        Events.Current.Subscribe<ParsedSemaphore?>("AdaptiveCruiseControl.TargetParsedSemaphore", data => { targetSemaphore = data; });
-        didSubscribeToData = true;
+        if (!didSubscribeToData)
+        {
+            Events.Current.Subscribe<PlannedPathData>("Pathfinding.PlannedPathData", data => { pathData = data; });
+            Events.Current.Subscribe<BaseVehicle?>("AdaptiveCruiseControl.LeadingVehicle", data => { leadingVehicle = data; });
+            Events.Current.Subscribe<ParsedSemaphore?>("AdaptiveCruiseControl.TargetParsedSemaphore", data => { targetSemaphore = data; });
+            didSubscribeToData = true;
+        }
 
         fastServer.Start();
         staticDataServer.Start();
@@ -98,6 +101,15 @@ public class VisualizationSockets : Plugin
                 {
                     position = CameraProvider.Current.GetCurrentData().truckPosition,
                     rotation = CameraProvider.Current.GetCurrentData().truckRotation,
+
+                    trailers = GameTelemetry.Current.GetCurrentData().trailers.Where(t => t.comBool.attached).Select(t => new SocketTelemetryTrailer
+                    {
+                        position = t.comDouble.worldPosition,
+                        rotationEuler = t.comDouble.worldRotation,
+                        hookPosition = t.comVector.hookPosition,
+                        wheels = t.comVector.wheelPositions.ToList(),
+                    }).ToList(),
+
                     speed = GameTelemetry.Current.GetCurrentData().truckFloat.speed,
                     speedLimit = GameTelemetry.Current.GetCurrentData().truckFloat.speedLimit,
                     throttle = GameTelemetry.Current.GetCurrentData().truckFloat.gameThrottle,
@@ -112,8 +124,10 @@ public class VisualizationSockets : Plugin
                     // TODO: ParsedSemaphore is the wrong one, edit ACC to send the right one
                     targetSemaphores = [targetSemaphore is ParsedSemaphore parsedSemaphore ? (int)parsedSemaphore.Semaphore.SemaphoreId : -1],
                     targetSpeed = ApplicationState.Current.DesiredSpeed,
-                    isControllingSteering = ApplicationState.Current.DrivingMode >= DrivingMode.FullSelfDriving && PluginBackend.Current.PluginHandler?.LoadedPlugins.Any(p => p.Info.Id == "tumppi066.laneassist") == true,
-                    isControllingAcceleration = ApplicationState.Current.DrivingMode <= DrivingMode.FullSelfDriving && PluginBackend.Current.PluginHandler?.LoadedPlugins.Any(p => p.Info.Id == "tumppi066.adaptivecruisecontrol") == true
+                    isControllingSteering = ApplicationState.Current.DrivingMode >= DrivingMode.FullSelfDriving && ApplicationState.Current.EnableAssists
+                                            && PluginBackend.Current.PluginHandler?.LoadedPlugins.Any(p => p.Info.Id == "tumppi066.laneassist") == true,
+                    isControllingAcceleration = ApplicationState.Current.DrivingMode <= DrivingMode.FullSelfDriving && ApplicationState.Current.EnableAssists
+                                                && PluginBackend.Current.PluginHandler?.LoadedPlugins.Any(p => p.Info.Id == "tumppi066.adaptivecruisecontrol") == true
                 },
                 vehicles = vehicles,
             }.ToJson()
@@ -132,7 +146,7 @@ public class VisualizationSockets : Plugin
             return new List<Vector3>();
 
         Vector3 truckPos = CameraProvider.Current.GetCurrentData().truckPosition;
-        float steeringPointDistance = 2f;
+        float steeringPointDistance = 1.2f * Math.Max(1f, GameTelemetry.Current.GetCurrentData().truckFloat.speed / 25f * 3.6f);
 
         float closestFactor = pathData.GetFactorForPoint(truckPos);
         float closestDist = closestFactor * pathData.TotalLength;
@@ -193,10 +207,11 @@ public class VisualizationSockets : Plugin
                 case Prefab prefab:
                     desiredPrefabs[prefab.Uid] = prefab;
                     break;
-                case Model model:
-                    desiredModels[model.Uid] = model;
-                    desiredNodes[model.Node.Uid] = model.Node;
-                    break;
+                // TODO: Optimize model loading, this lags ETS2LA for ~20 seconds at first start
+                // case Model model:
+                //     desiredModels[model.Uid] = model;
+                //     desiredNodes[model.Node.Uid] = model.Node;
+                //     break;
             }
         }
 

@@ -288,10 +288,22 @@ public struct SocketVehicle
 }
 
 [Serializable]
+public struct SocketTelemetryTrailer
+{
+    public Vector3 position;
+    public Vector3 rotationEuler;
+    public Vector3 hookPosition;
+    
+    public List<Vector3> wheels;
+}
+
+[Serializable]
 public struct SocketTelemetryData
 {
     public Vector3 position;
     public Quaternion rotation;
+
+    public List<SocketTelemetryTrailer> trailers;
     
     public float speed;
     public float speedLimit;
