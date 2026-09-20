@@ -99,7 +99,7 @@ public class VisualizationSockets : Plugin
                 timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 telemetryData = new SocketTelemetryData
                 {
-                    position = CameraProvider.Current.GetCurrentData().truckPosition,
+                    position = GameTelemetry.Current.GetCurrentData().truckPlacement.coordinate.ToVector3(),
                     rotation = CameraProvider.Current.GetCurrentData().truckRotation,
 
                     trailers = GameTelemetry.Current.GetCurrentData().trailers.Where(t => t.comBool.attached).Select(t => new SocketTelemetryTrailer
@@ -120,7 +120,7 @@ public class VisualizationSockets : Plugin
                 selfDrivingData = new SocketSelfDrivingData
                 {
                     pathPoints = GetPathPoints(),
-                    targetVehicles = [leadingVehicle is TrafficVehicle trafficVehicle ? trafficVehicle.id : -1],
+                    targetVehicles = [leadingVehicle is TrafficVehicle trafficVehicle ? trafficVehicle.id : leadingVehicle is TrafficTrailer trafficTrailer ? trafficTrailer.parent.id : -1],
                     // TODO: ParsedSemaphore is the wrong one, edit ACC to send the right one
                     targetSemaphores = [targetSemaphore is ParsedSemaphore parsedSemaphore ? (int)parsedSemaphore.Semaphore.SemaphoreId : -1],
                     targetSpeed = ApplicationState.Current.DesiredSpeed,
