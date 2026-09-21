@@ -1,6 +1,7 @@
 ﻿using ETS2LA.Game.Telemetry;
 using ETS2LA.Game.SDK;
 using ETS2LA.Game;
+using ETS2LA.Notifications;
 using ETS2LA.Backend;
 using ETS2LA.Game.Data;
 using ETS2LA.Backend.Events;
@@ -8,9 +9,10 @@ using ETS2LA.State;
 using ETS2LA.Shared;
 using ETS2LA.Logging;
 using ETS2LA.Game.PmdFiles;
-using TruckLib.ScsMap;
+
 using PathLib;
 using TruckLib;
+using TruckLib.ScsMap;
 
 using System.Numerics;
 using System.Diagnostics;
@@ -23,9 +25,9 @@ public class VisualizationSockets : Plugin
     {
         Id = "tumppi066.visualizationsockets",
         Name = "Visualization Sockets",
-        Description = "This plugin is used to communicate with the visualization interface. It sends telemetry and map data to the visualization interface.",
-        Version = "0.1.0",
-        SupportedETS2LA = ">=2026.8.1",
+        Description = "This plugin is used to communicate with the visualization interface.",
+        Version = "1.0.0",
+        SupportedETS2LA = ">=2026.9.5026",
         Icon = "https://avatars.githubusercontent.com/u/162675991?s=128",
         AuthorName = "Tumppi066",
         AuthorWebsite = "https://tumppi066.fi",
@@ -67,6 +69,16 @@ public class VisualizationSockets : Plugin
             sinceLastStaticUpdate.Restart();
 
             Logger.Info("Reset static data due to new client.");
+            NotificationHandler.Current.SendNotification(
+                new Notification
+                {
+                    Id = "VisualizationSockets.StaticDataReset",
+                    Title = "Visualization Sockets",
+                    Content = "New client connection, resetting static data...",
+                    Level = NotificationLevel.Information,
+                    CloseAfter = 3f
+                }
+            );
         };
 
         if (!didSubscribeToData)
@@ -146,17 +158,21 @@ public class VisualizationSockets : Plugin
             return new List<Vector3>();
 
         Vector3 truckPos = CameraProvider.Current.GetCurrentData().truckPosition;
-        float steeringPointDistance = 1.2f * Math.Max(1f, GameTelemetry.Current.GetCurrentData().truckFloat.speed / 25f * 3.6f);
+        float steeringPointDistance = 1.5f * Math.Max(1f, GameTelemetry.Current.GetCurrentData().truckFloat.speed / 25f * 3.6f);
 
         float closestFactor = pathData.GetFactorForPoint(truckPos);
         float closestDist = closestFactor * pathData.TotalLength;
         List<OrientedPoint> steeringPoints = new List<OrientedPoint>();
         for (int i = 0; i < 20; i++)
         {
-            OrientedPoint? point = pathData.InterpolateDist(closestDist + i * steeringPointDistance, affectLaneChange: i == 0);
-            if (point != null) {
-                steeringPoints.Add(point.Value);
-            }
+            try
+            {
+                OrientedPoint? point = pathData.InterpolateDist(closestDist + i * steeringPointDistance, affectLaneChange: i == 0);
+                if (point != null) {
+                    steeringPoints.Add(point.Value);
+                }
+            } 
+            catch {} 
         }
 
         return steeringPoints.Select(p => p.Position).ToList();
@@ -261,18 +277,6 @@ public class VisualizationSockets : Plugin
             removedPrefabs.Count == 0 &&
             removedModels.Count == 0
         ) return;
-
-        Logger.Info(
-            $"Static data update: " +
-            $"+{addedNodes.Count} nodes, " +
-            $"-{removedNodes.Count} nodes, " +
-            $"+{addedRoads.Count} roads, " +
-            $"-{removedRoads.Count} roads, " +
-            $"+{addedPrefabs.Count} prefabs, " +
-            $"-{removedPrefabs.Count} prefabs, " +
-            $"+{addedModels.Count} models, " +
-            $"-{removedModels.Count} models"
-        );
 
         SendStaticData(
             new StaticDataMessage
